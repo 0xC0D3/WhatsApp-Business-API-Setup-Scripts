@@ -10,11 +10,7 @@ steps:
       - '-c'
       - |
         docker-compose up -d
-    volumes:
-      - name: 'whatsappMedia'
-        path: '/usr/local/wamedia'
-      - name: 'postgresData'
-        path: '/var/lib/postgresql/data'
+
     env:
       - 'WA_API_VERSION=2.41.2'  # Ajusta esto según tu versión de WA API
 
