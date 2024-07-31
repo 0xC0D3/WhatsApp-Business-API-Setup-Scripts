@@ -1,7 +1,29 @@
 steps:
-  # running docker-compose
-  - name: 'docker/compose:2.29.1'
-    args: ['up', '-d', '--build']
+  # Step 1: Compilar la imagen Docker para la aplicación wapp-client
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'gcr.io/$PROJECT_ID/wapp-client', '.']
+
+  # Step 2: Ejecutar docker-compose para levantar los servicios
+  - name: 'docker/compose:1.29.2'
+    entrypoint: 'sh'
+    args:
+      - '-c'
+      - |
+        docker-compose up -d
+    volumes:
+      - name: 'whatsappMedia'
+        path: '/usr/local/wamedia'
+      - name: 'postgresData'
+        path: '/var/lib/postgresql/data'
+    env:
+      - 'WA_API_VERSION=2.41.2'  # Ajusta esto según tu versión de WA API
+
+  # Step 3: Desplegar a App Engine
+  - name: 'gcr.io/cloud-builders/gcloud'
+    args: ['app', 'deploy']
+
+images:
+  - 'gcr.io/$PROJECT_ID/wapp-client'
 options:
   logging: CLOUD_LOGGING_ONLY
   
